@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>มั่นชัวร์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Sarabun:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+/* ============================================================================
+   มั่นชัวร์ — token เดียวทั้งระบบ (white-label: โบรกเกอร์ override เฉพาะ --brand-*)
+   จงใจใช้ธีมสว่างธีมเดียว เพราะเป็นจอผลิตภัณฑ์ที่ล็อกจานสีไว้แล้วในคู่มือออกแบบ
+   ========================================================================== */
+:root{
+  --brand-900:#12343F; --brand-700:#1B4B5A; --brand-500:#2E7A8C;
+  --brand-300:#8FB9C2; --brand-100:#DCEAEC; --brand-050:#EFF6F7;
+  --gold-600:#A97828;  --gold-300:#D9B577;  --gold-100:#F4E9D6;
+
+  --paper:#FBF9F5; --card:#FFFFFF; --sunk:#F2EEE7;
+  --ink-900:#16202B; --ink-600:#4E5A68; --ink-400:#7C8794; --hair:#E2DED6;
+
+  --risk:#B23B2E;  --risk-bg:#FBE9E5;
+  --watch:#B5791A; --watch-bg:#FBF0DA;
+  --ok:#3E7D4C;    --ok-bg:#E6F1E7;
+  --unk:#7C8794;   --unk-bg:#EDEAE4;
+
+  --r-card:14px; --r-ctl:12px; --r-tag:6px;
+  color-scheme:light;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:#E8E3DA; color:var(--ink-900);
+  font-family:"Sarabun","Noto Sans Thai",system-ui,sans-serif;
+  font-size:16px; line-height:1.7; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:"IBM Plex Sans Thai","Noto Sans Thai",system-ui,sans-serif;
+  margin:0; line-height:1.4; text-wrap:balance; font-weight:600; color:var(--ink-900);
+}
+.mono,.num{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+p{margin:0}
+button{font-family:inherit; font-size:inherit; color:inherit; cursor:pointer}
+a{color:var(--brand-700)}
+:focus-visible{outline:2.5px solid var(--brand-500); outline-offset:2px; border-radius:4px}
+
+/* ------------------------------------------------------------------ shell */
+.app{
+  max-width:560px; margin-inline:auto; min-height:100dvh; background:var(--paper);
+  display:flex; flex-direction:column; position:relative;
+  box-shadow:0 0 0 1px var(--hair), 0 18px 50px -30px rgba(18,52,63,.5);
+}
+.topbar{
+  position:sticky; top:0; z-index:20; background:var(--paper);
+  border-bottom:1px solid transparent; padding:10px 16px 8px;
+  display:flex; align-items:center; gap:12px; min-height:52px;
+}
+.topbar.lined{border-bottom-color:var(--hair)}
+.iconbtn{
+  background:var(--card); border:1px solid var(--hair); border-radius:10px;
+  width:38px; height:38px; display:grid; place-items:center; flex:none; padding:0;
+}
+.iconbtn:hover{border-color:var(--brand-500)}
+.topbar .tbslot{flex:1; min-width:0}
+.brandmark{display:flex; align-items:center; gap:9px}
+.brandmark .lockup{
+  width:30px; height:30px; border-radius:8px; background:var(--brand-700); color:#fff;
+  display:grid; place-items:center; font-weight:700; font-size:.82rem; flex:none;
+  font-family:"IBM Plex Sans Thai",sans-serif;
+}
+.brandmark b{font-size:.95rem; font-weight:600; display:block; line-height:1.2}
+.brandmark small{font-size:.7rem; color:var(--ink-400); display:block; line-height:1.2}
+
+.view{flex:1; padding:4px 16px 20px; display:flex; flex-direction:column}
+.footbar{
+  position:sticky; bottom:0; z-index:20; padding:12px 16px 16px;
+  background:linear-gradient(to top, var(--paper) 72%, rgba(251,249,245,0));
+}
+.footbar:empty{display:none}
+
+/* ----------------------------------------------------------------- typo */
+.eyebrow{font-size:.71rem; font-weight:600; letter-spacing:.09em; color:var(--ink-400); text-transform:uppercase}
+.h-screen{font-size:1.16rem; line-height:1.45; margin-bottom:6px}
+.h-sec{font-size:.98rem}
+.lede{color:var(--ink-600); font-size:.875rem; line-height:1.62}
+.small{font-size:.84rem; color:var(--ink-600)}
+.tiny{font-size:.75rem; color:var(--ink-400)}
+.stack{display:flex; flex-direction:column}
+.g4{gap:4px}.g6{gap:6px}.g8{gap:8px}.g12{gap:12px}.g16{gap:16px}.g24{gap:24px}
+.pushdown{margin-top:auto}
+
+/* --------------------------------------------------------------- buttons */
+.btn{
+  display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+  border:none; border-radius:var(--r-ctl); font-weight:600; padding:14px 20px;
+  min-height:50px; line-height:1.35; text-align:center; text-decoration:none;
+}
+.btn-primary{background:var(--brand-700); color:#fff}
+.btn-primary:hover{background:var(--brand-900)}
+.btn-primary[disabled]{background:#C4CBD1; color:#fff; cursor:not-allowed}
+.btn-ghost{background:transparent; color:var(--brand-700); border:1.5px solid var(--brand-700)}
+.btn-ghost:hover{background:var(--brand-050)}
+.btn-text{
+  background:none; border:none; color:var(--ink-600); text-decoration:underline;
+  text-underline-offset:3px; font-weight:500; padding:11px 4px; min-height:44px; width:100%;
+}
+.btn-text:hover{color:var(--brand-700)}
+.btn-sm{min-height:40px; padding:8px 14px; font-size:.88rem; width:auto}
+
+/* --------------------------------------------------------------- choices */
+.choice{
+  display:block; width:100%; text-align:start; background:var(--card);
+  border:1.5px solid var(--hair); border-radius:var(--r-card); padding:13px 15px;
+  min-height:54px; color:var(--ink-900); font-weight:500;
+}
+.choice:hover{border-color:var(--brand-500)}
+.choice.sel{border-color:var(--brand-700); background:var(--brand-050); font-weight:600}
+.choice small{display:block; color:var(--ink-600); font-weight:400; font-size:.83rem; margin-top:1px}
+.choice .row{display:flex; align-items:center; gap:11px}
+.choice .tick{
+  width:21px; height:21px; border-radius:6px; border:1.5px solid var(--hair);
+  background:var(--card); flex:none; display:grid; place-items:center;
+}
+.choice.sel .tick{background:var(--brand-700); border-color:var(--brand-700)}
+.choice .tick svg{opacity:0}
+.choice.sel .tick svg{opacity:1}
+.choice.round .tick{border-radius:50%}
+
+.persona{
+  display:block; width:100%; text-align:start; background:var(--card);
+  border:1.5px solid var(--hair); border-radius:var(--r-card); padding:15px 16px;
+}
+.persona:hover{border-color:var(--brand-500)}
+.persona.sel{border-color:var(--brand-700); background:var(--brand-050)}
+.persona b{font-size:1.02rem; font-weight:600; display:block}
+.persona span{font-size:.85rem; color:var(--ink-600)}
+
+.dots{display:flex; gap:4px}
+.dots i{height:4px; flex:1; border-radius:2px; background:var(--hair); transition:background .2s}
+.dots i.on{background:var(--brand-700)}
+
+/* ----------------------------------------------------------------- cards */
+.card{background:var(--card); border:1px solid var(--hair); border-radius:var(--r-card); padding:14px}
+.trust{display:flex; gap:10px; align-items:flex-start; padding:10px 0}
+.trust + .trust{border-top:1px solid var(--hair)}
+.trust svg{flex:none; margin-top:2px}
+.trust b{font-weight:600; font-size:.88rem; display:block}
+.trust span{font-size:.8rem; color:var(--ink-600); display:block; line-height:1.5}
+
+.pill{
+  display:inline-flex; align-items:center; gap:5px; font-size:.73rem; font-weight:700;
+  padding:3px 9px; border-radius:var(--r-tag); white-space:nowrap;
+}
+.pill-red{color:var(--risk); background:var(--risk-bg)}
+.pill-watch{color:var(--watch); background:var(--watch-bg)}
+.pill-ok{color:var(--ok); background:var(--ok-bg)}
+.pill-unknown{color:var(--unk); background:var(--unk-bg)}
+.pill-gold{color:#7A560F; background:var(--gold-100); border:1px solid var(--gold-300)}
+.pill-info{color:var(--brand-700); background:var(--brand-050)}
+
+/* ------------------------------------------------------------- gap tubes */
+.tube{padding:14px 0 12px}
+.tube + .tube{border-top:1px solid var(--hair)}
+.tube-head{display:flex; align-items:center; gap:9px}
+.tube-head h3{font-size:.97rem; font-weight:600}
+.face{font-size:1.55rem; line-height:1; margin-inline-start:auto; flex:none}
+.tube-sub{font-size:.8rem; color:var(--ink-600); margin-top:2px; line-height:1.5}
+
+.track{
+  height:8px; border-radius:4px; overflow:hidden; display:flex; margin-top:10px;
+  background:var(--unk-bg);
+}
+/* ส่วนที่เพิ่มขึ้นจากแผนที่เลือก — คนละสีกับชั้นที่มีอยู่เดิม */
+.seg-add{
+  background-color:var(--ok);
+  background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.38) 0 2px,transparent 2px 6px);
+}
+.addlbl{
+  font-family:"IBM Plex Mono",monospace; font-size:.72rem; font-weight:500;
+  color:var(--ok); flex:none;
+}
+
+/* แถบ 3 หลอดที่ค้างอยู่ด้านบนตลอดการเลื่อน */
+.tubesticky{
+  position:sticky; top:52px; z-index:15; background:var(--paper);
+  margin-inline:-16px; padding:8px 16px 10px; border-bottom:1px solid var(--hair);
+  box-shadow:0 8px 12px -12px rgba(22,32,43,.45);
+}
+.trow{
+  display:flex; gap:10px; align-items:center; width:100%; text-align:start;
+  background:none; border:0; padding:8px 6px; margin-inline:-6px; border-radius:9px;
+}
+.trow + .trow{border-top:1px solid var(--hair)}
+.trow:hover{background:var(--brand-050)}
+.trow .face{font-size:1.3rem; margin:0; flex:none; line-height:1}
+.trow-main{flex:1; min-width:0; display:block}
+.trow-top{display:flex; align-items:center; gap:7px}
+.trow-top b{
+  font-size:.86rem; font-weight:600; flex:1; min-width:0;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.trow .track{margin-top:6px}
+.stickyhint{text-align:center; margin-top:7px}
+.track.t-red{background:var(--risk-bg)}
+.track.t-watch{background:var(--watch-bg)}
+.track.t-ok{background:var(--ok-bg)}
+.seg{height:100%; transition:width .7s cubic-bezier(.22,.8,.3,1)}
+.seg-savings{background:var(--brand-700)}
+.seg-state{background:var(--gold-600); background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.28) 0 2px,transparent 2px 6px)}
+.seg-always{background:var(--brand-300)}
+.seg-conditional{background-color:var(--brand-100); background-image:repeating-linear-gradient(135deg,var(--brand-500) 0 2px,var(--brand-100) 2px 7px)}
+.seg-preview{background-color:transparent; background-image:repeating-linear-gradient(135deg,var(--ok) 0 2px,transparent 2px 6px); box-shadow:inset 0 0 0 1.5px var(--ok)}
+
+.amountline{display:flex; align-items:baseline; gap:6px; margin-top:8px; flex-wrap:wrap; font-size:.82rem; color:var(--ink-600)}
+.amountline .have{font-weight:600; font-size:.95rem}
+.legend{display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:9px}
+.legend div{display:flex; align-items:center; gap:6px; font-size:.74rem; color:var(--ink-400)}
+.key{width:12px; height:8px; border-radius:2px; flex:none}
+.why{
+  display:inline-flex; align-items:center; gap:5px; font-size:.78rem; font-weight:500;
+  color:var(--brand-700); border:1px solid var(--hair); background:var(--card);
+  border-radius:100px; padding:5px 13px; margin-top:10px; width:auto; min-height:34px;
+}
+.why:hover{border-color:var(--brand-500)}
+
+.toggle{display:flex; gap:0; background:var(--sunk); border-radius:10px; padding:3px; margin-top:12px}
+.toggle button{
+  flex:1; border:none; background:transparent; border-radius:8px; padding:8px 6px;
+  font-size:.84rem; font-weight:500; color:var(--ink-600); min-height:38px;
+}
+.toggle button.on{background:var(--card); color:var(--brand-700); font-weight:600; box-shadow:0 1px 3px rgba(22,32,43,.1)}
+
+/* ------------------------------------------------------------- solutions */
+.sol{border:1px solid var(--hair); background:var(--card); border-radius:var(--r-card); padding:15px}
+.sol.gold{border:1.5px solid var(--gold-600); background:var(--gold-100)}
+.sol h4{font-size:1.02rem}
+.priceline{display:flex; align-items:baseline; gap:6px; margin-top:6px}
+.priceline .amt{font-size:1.18rem; font-weight:500}
+.priceline .per{font-size:.85rem; color:var(--ink-600)}
+
+/* --------------------------------------------------------------- product */
+.prod{background:var(--card); border:1px solid var(--hair); border-radius:var(--r-card); overflow:hidden}
+.prod.sel{border-color:var(--brand-700); box-shadow:0 0 0 1px var(--brand-700)}
+.prod.over{border-color:#E8C3BC}
+.prod-body{padding:14px}
+.prod h3{font-size:.98rem}
+.prod .insurer{font-size:.76rem; color:var(--ink-400); margin-top:2px}
+.covers{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:5px}
+.covers li{display:flex; gap:8px; font-size:.83rem; line-height:1.5; color:var(--ink-600)}
+.covers li::before{content:""; width:5px; height:5px; border-radius:50%; background:var(--brand-300); flex:none; margin-top:8px}
+.exbox{background:#FDF7F5; border:1px solid #EFD9D3; border-radius:var(--r-ctl); padding:10px 13px}
+.exbox h5{margin:0 0 5px; font-size:.8rem; font-weight:700; color:var(--risk); font-family:"IBM Plex Sans Thai",sans-serif}
+.exbox ul{margin:0; padding-inline-start:16px; font-size:.8rem; color:var(--ink-600); line-height:1.55}
+.exbox li{margin-bottom:4px}
+.metarow{display:flex; flex-wrap:wrap; gap:6px 12px; font-size:.76rem; color:var(--ink-400)}
+.deltabox{background:var(--brand-050); border-top:1px solid var(--brand-100); padding:12px 16px}
+.deltabox .dl{display:flex; align-items:center; gap:8px; font-size:.85rem}
+.deltabox .dl + .dl{margin-top:7px}
+.minitrack{height:9px; border-radius:5px; background:var(--card); overflow:hidden; display:flex; flex:1; min-width:70px}
+
+/* ----------------------------------------------------------------- forms */
+.field label{display:block; font-size:.86rem; font-weight:600; margin-bottom:6px}
+.field input{
+  width:100%; border:1.5px solid var(--hair); border-radius:var(--r-ctl); padding:12px 14px;
+  font:inherit; background:var(--card); color:var(--ink-900); min-height:50px;
+}
+.field input:focus{border-color:var(--brand-700); outline:none}
+.field .hint{font-size:.8rem; color:var(--ink-400); margin-top:5px}
+.slots{display:grid; grid-template-columns:repeat(auto-fit,minmax(104px,1fr)); gap:8px}
+.slot{
+  border:1.5px solid var(--hair); background:var(--card); border-radius:var(--r-ctl);
+  padding:11px 8px; text-align:center; font-size:.9rem; min-height:56px; line-height:1.4;
+}
+.slot:hover{border-color:var(--brand-500)}
+.slot.sel{border-color:var(--brand-700); background:var(--brand-050); font-weight:600}
+.slot b{display:block; font-weight:600}
+.slot span{font-size:.78rem; color:var(--ink-600)}
+.slot.sel span{color:var(--brand-700)}
+
+/* ----------------------------------------------------------------- sheet */
+.scrim{
+  position:fixed; inset:0; background:rgba(18,32,43,.45); z-index:60;
+  display:flex; align-items:flex-end; justify-content:center; padding:0;
+  animation:fade .18s ease;
+}
+.sheet{
+  background:var(--card); width:100%; max-width:560px; border-radius:18px 18px 0 0;
+  padding:8px 18px 22px; max-height:88dvh; overflow-y:auto;
+  animation:rise .24s cubic-bezier(.22,.8,.3,1);
+}
+.grab{width:38px; height:4px; border-radius:2px; background:var(--hair); margin:6px auto 14px}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{transform:translateY(22px)}to{transform:translateY(0)}}
+
+.srcblock{border-inline-start:3px solid var(--brand-100); padding-inline-start:13px}
+.srcblock + .srcblock{margin-top:13px}
+.srcblock .lab{font-size:.73rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-400)}
+.formula{
+  background:var(--sunk); border-radius:10px; padding:11px 13px; font-size:.84rem;
+  font-family:"IBM Plex Mono",monospace; line-height:1.7; overflow-x:auto; white-space:pre-wrap;
+}
+.kv{display:flex; justify-content:space-between; gap:14px; font-size:.88rem; padding:7px 0}
+.kv + .kv{border-top:1px solid var(--hair)}
+.kv span{color:var(--ink-600)}
+.kv b{font-weight:600; text-align:end}
+
+/* -------------------------------------------------------------- co-pilot */
+.broker{display:flex; gap:13px; align-items:center}
+.avatar{
+  width:54px; height:54px; border-radius:50%; flex:none; display:grid; place-items:center;
+  background:var(--brand-100); color:var(--brand-900); font-weight:700; font-size:1.2rem;
+  font-family:"IBM Plex Sans Thai",sans-serif;
+}
+.checklist{margin:0; padding:0; list-style:none}
+.checklist li{display:flex; gap:10px; align-items:flex-start; padding:9px 0; font-size:.88rem; line-height:1.5}
+.checklist li + li{border-top:1px solid var(--hair)}
+.checklist .n{
+  width:20px; height:20px; border-radius:50%; background:var(--ok-bg); color:var(--ok);
+  display:grid; place-items:center; flex:none; margin-top:2px;
+}
+.checklist .n.warn{background:var(--watch-bg); color:var(--watch)}
+.checklist b{display:block; font-weight:600}
+.checklist span{color:var(--ink-600); font-size:.83rem}
+
+.timeline{position:relative; padding-inline-start:20px}
+.timeline::before{content:""; position:absolute; inset-block:6px; inset-inline-start:5px; width:2px; background:var(--hair)}
+.tl{position:relative; padding-block:8px}
+.tl::before{
+  content:""; position:absolute; inset-inline-start:-19px; top:14px; width:10px; height:10px;
+  border-radius:50%; background:var(--card); border:2px solid var(--brand-500);
+}
+.tl time{font-size:.74rem; color:var(--ink-400); font-family:"IBM Plex Mono",monospace}
+.tl p{font-size:.87rem; line-height:1.55}
+.tl em{font-style:normal; color:var(--ink-600); font-size:.82rem; display:block}
+
+.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px}
+.stat{background:var(--sunk); border-radius:var(--r-ctl); padding:11px 13px}
+.stat .k{font-size:.75rem; color:var(--ink-400)}
+.stat .v{font-size:1.04rem; font-weight:500; margin-top:1px}
+
+.banner{
+  border-inline-start:3px solid var(--gold-600); background:var(--gold-100);
+  border-radius:0 10px 10px 0; padding:12px 15px; font-size:.87rem; line-height:1.6;
+}
+.banner.plain{border-inline-start-color:var(--brand-500); background:var(--brand-050)}
+.banner.warn{border-inline-start-color:var(--watch); background:var(--watch-bg)}
+
+/* ------------------------------------------------------------------ hero */
+/* สีในบล็อกนี้เป็นสีของโลโก้เอง ไม่ใช่ token ของ UI — โลโก้ห้ามเปลี่ยนสีตามแบรนด์โบรกเกอร์ */
+.hero{
+  background:linear-gradient(170deg,#EDF4FF 0%,var(--card) 66%);
+  border:1px solid var(--hair); border-radius:18px; padding:24px 20px 22px; text-align:center;
+}
+.hero svg{display:block; margin:0 auto}
+.wordmark{font-family:"IBM Plex Sans Thai",sans-serif; font-weight:700; font-size:2rem; letter-spacing:.01em; margin-top:10px; color:#1B2C6B}
+.wordmark em{font-style:normal; color:#2F86F6}
+.hero p{font-size:.95rem; font-weight:600; color:var(--ink-900); margin-top:9px; font-family:"IBM Plex Sans Thai",sans-serif}
+.hero .sub{font-size:.84rem; font-weight:400; color:var(--ink-600); margin-top:5px}
+
+/* ---------------------------------------------------------------- broker */
+.brokercard{
+  display:block; width:100%; text-align:start; background:var(--card);
+  border:1.5px solid var(--hair); border-radius:var(--r-card); padding:13px 14px;
+}
+.brokercard:hover{border-color:var(--brand-500)}
+.brokercard.sel{border-color:var(--brand-700); background:var(--brand-050)}
+.brokercard .top{display:flex; gap:11px; align-items:center}
+.brokercard b{font-size:.97rem; font-weight:600; display:block}
+.brokercard .role{font-size:.8rem; color:var(--ink-600); display:block; line-height:1.45}
+.matchnum{
+  margin-inline-start:auto; text-align:center; flex:none; background:var(--brand-050);
+  border-radius:9px; padding:5px 9px; min-width:52px;
+}
+.brokercard.sel .matchnum{background:var(--card)}
+.matchnum b{font-size:1rem; color:var(--brand-700); font-family:"IBM Plex Mono",monospace}
+.matchnum span{font-size:.63rem; color:var(--ink-400); display:block; line-height:1.2}
+.avatar.sm{width:42px; height:42px; font-size:.95rem}
+
+/* two-button action bar */
+.two{display:grid; grid-template-columns:1fr 1fr; gap:9px}
+.two .btn{padding:13px 10px; font-size:.92rem; min-height:48px}
+
+.seclabel{display:flex; align-items:center; gap:9px}
+.seclabel .eyebrow{flex:none}
+.seclabel::after{content:""; flex:1; height:1px; background:var(--hair)}
+
+.fadein{animation:fi .18s ease}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.hr{height:1px; background:var(--hair); border:0; margin:0}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important; transition-duration:.001ms!important}
+}
+@media (min-width:600px){
+  body{padding-block:24px}
+  /* overflow:clip แทน hidden เพราะ hidden จะทำให้ position:sticky ใช้ไม่ได้ */
+  .app{min-height:calc(100dvh - 48px); border-radius:20px; overflow:clip}
+}
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="มั่นชัวร์ — เช็คว่าความคุ้มครองของคุณพอดีกับชีวิตจริงหรือยัง ตอบ 8 คำถามใน 3 นาที ไม่ต้องสมัคร">
+<meta name="theme-color" content="#FBF9F5">
+<meta property="og:title" content="มั่นชัวร์">
+<meta property="og:description" content="ตอบ 8 คำถามใน 3 นาที แล้วดูว่าตอนนี้คุณขาดความคุ้มครองอะไรอยู่">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 8 88 22v30c0 26-17 45-38 54-21-9-38-28-38-54V22L50 8Z' fill='%232470E8'/%3E%3Cpath d='M34 52l11 11 22-24' stroke='%23fff' stroke-width='9' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+/* reset เดิมที่ตัว artifact host ใส่ให้ ต้องประกาศเองเมื่อ deploy แยก */
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar" id="topbar"></div>
+  <div class="view" id="view"></div>
+  <div class="footbar" id="footbar"></div>
+</div>
+<div id="modal"></div>
+
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
