@@ -20,10 +20,34 @@ python3 -m http.server 8000
 
 แล้วเปิด http://localhost:8000
 
-## ขึ้น Vercel
+## ขึ้น GitHub แล้วต่อ Vercel
 
-ทั้งเว็บเป็นไฟล์ static ล้วน ไม่ต้องตั้งค่า framework ไม่ต้องมี `vercel.json`
-ตอน Vercel ถาม framework preset ให้ตอบ **Other** และเว้น build command กับ output directory ว่างไว้
+โฟลเดอร์นี้ init git และ commit แรกไว้ให้แล้ว (branch `main`) เหลือแค่ผูก remote กับ push
+
+### ทางที่ใช้เบราว์เซอร์อย่างเดียว ไม่ต้องลงอะไรเพิ่ม
+
+1. เข้า github.com/new ตั้งชื่อ repo เช่น `manchua-web` จะ public หรือ private ก็ได้
+   Vercel ต่อกับ private repo ได้ปกติ **อย่าติ๊ก** Add a README เพราะจะชนกับของที่มีอยู่
+2. ในหน้า repo ที่เพิ่งสร้าง กด `uploading an existing file` แล้วลากไฟล์
+   `index.html` `app.js` `engine.js` `README.md` เข้าไป กด Commit
+3. เข้า vercel.com กด **Add New → Project** เลือก repo นี้
+4. ช่อง **Framework Preset** เลือก **Other** เว้น Build Command และ Output Directory ว่างไว้
+5. กด **Deploy** รอราวครึ่งนาที จะได้ลิงก์ `ชื่อโปรเจกต์.vercel.app` ส่งให้คนอื่นได้เลย
+
+หลังจากนี้ทุกครั้งที่ commit ขึ้น `main` Vercel จะ deploy ให้เอง
+
+### ทางที่ใช้ terminal (ต้องมี Node กับ gh ก่อน)
+
+```bash
+gh repo create manchua-web --private --source=. --push
+npx vercel --prod
+```
+
+ถ้ายังไม่มี Node กับ gh ติดตั้งด้วย Homebrew ก่อน
+
+```bash
+brew install node gh
+```
 
 ## ก่อนเปิดให้คนนอกใช้จริง
 
