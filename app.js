@@ -318,7 +318,7 @@
     <path d="M62 27 85 36v21c0 17-9 29-23 35-14-6-23-18-23-35V36l23-9Z" fill="#FFFFFF"/>
 
     <circle cx="54" cy="51" r="4.2" fill="#1B2C6B"/>
-    <path d="M67 47.8l7 3.3-7 3.3" fill="none" stroke="#1B2C6B" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M73 47.6l-6.5 3.4 6.5 3.4" fill="none" stroke="#1B2C6B" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M53 62q9 8 18 0" fill="none" stroke="#1B2C6B" stroke-width="4" stroke-linecap="round"/>
 
     <g transform="rotate(-20 62 68)">
