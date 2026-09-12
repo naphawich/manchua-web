@@ -47,7 +47,7 @@
 
   const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const TICK = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.2 4.7 9 10 3.2" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  const CHEV = '<svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M11 3.5 5.5 9l5.5 5.5" stroke="#16202B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const CHEV = '<svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M11 3.5 5.5 9l5.5 5.5" stroke="#0C1B3A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const STATUS_TEXT = { red: 'ต้องรีบปิด', watch: 'ควรดูแล', ok: 'คุ้มครองแล้ว', unknown: 'ยังสรุปไม่ได้' };
   const STATUS_FACE = { red: '🙁', watch: '😐', ok: '🙂', unknown: '🤔' };
   const SEG_LABEL = { savings: 'เงินเก็บของคุณ', state: 'สิทธิรัฐ (ม.40)', always: 'ประกันที่จ่ายทุกกรณี', conditional: 'ประกันที่จ่ายบางเงื่อนไข' };
@@ -339,7 +339,7 @@
       ['ไม่มีการติดตาม', 'ไม่ต้องกรอกชื่อหรือเบอร์เพื่อดูผล ไม่มีสายโทรเข้าโดยไม่ได้นัด']
     ];
     const icons = [
-      '<svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2.5 3.5 5v5c0 3.6 2.7 6.6 6.5 7.5 3.8-.9 6.5-3.9 6.5-7.5V5L10 2.5Z" stroke="#1B4B5A" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+      '<svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2.5 3.5 5v5c0 3.6 2.7 6.6 6.5 7.5 3.8-.9 6.5-3.9 6.5-7.5V5L10 2.5Z" stroke="#1450C8" stroke-width="1.5" stroke-linejoin="round"/></svg>',
       '<svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2.6 12.3 7l4.9.7-3.6 3.4.9 4.9-4.5-2.4-4.5 2.4.9-4.9L2.8 7.7 7.7 7 10 2.6Z" stroke="#A97828" stroke-width="1.5" stroke-linejoin="round"/></svg>',
       '<svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 10.5 7.5 15 17 5.5" stroke="#3E7D4C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
     ];
@@ -551,7 +551,7 @@
       top: `<button class="iconbtn" data-act="go" data-s="s3" aria-label="กลับไปแก้คำตอบ">${CHEV}</button>
         <div class="tbslot"><span class="eyebrow">ภาพความคุ้มครองของคุณ</span></div>
         <button class="iconbtn" data-act="erase" aria-label="ลบข้อมูลทั้งหมด">
-          <svg width="15" height="15" viewBox="0 0 18 18" fill="none"><path d="M3.5 5h11M7 5V3.5h4V5M5 5l.7 9.5h6.6L13 5" stroke="#4E5A68" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="15" height="15" viewBox="0 0 18 18" fill="none"><path d="M3.5 5h11M7 5V3.5h4V5M5 5l.7 9.5h6.6L13 5" stroke="#4A5670" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>`,
       body: `<div class="stack g16" style="padding-top:8px">
         <div class="stack g4">
@@ -1085,11 +1085,11 @@
         <div class="card" style="background:var(--brand-900);border-color:var(--brand-900);color:#fff">
           <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
             <div style="flex:1;min-width:120px">
-              <div class="tiny" style="color:#9DB3BC">ลูกค้า · เวลานัด</div>
+              <div class="tiny" style="color:#9DB0D6">ลูกค้า · เวลานัด</div>
               <b>${esc(b.nickname || '—')} · ${esc(b.slotLabel || '—')}</b>
             </div>
             <div style="text-align:end">
-              <div class="tiny" style="color:#9DB3BC">เหลือเวลารับเคส</div>
+              <div class="tiny" style="color:#9DB0D6">เหลือเวลารับเคส</div>
               <b class="mono">01:47:22</b>
             </div>
           </div>
