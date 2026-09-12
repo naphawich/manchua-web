@@ -38,7 +38,7 @@
     qi: 0, consentCoverage: null, estimatedE: false, skipped: {},
     budget: null, selected: [],
     tubes: null, ranking: null, tubesAnimated: false,
-    brokerId: null,
+    brokerId: null, readExclusions: false, orderNo: null,
     booking: { nickname: '', lineId: '', slot: null, slotLabel: '', consent: false },
     audit: [], auditKeys: {}
   };
@@ -847,10 +847,61 @@
         </div>
 
         ${hasState ? `<a class="btn btn-ghost" href="https://www.sso.go.th" target="_blank" rel="noopener">เปิดเว็บประกันสังคมเพื่อสมัคร ม.40</a>` : ''}
+
+        <button class="choice ${S.readExclusions ? 'sel' : ''}" data-act="read-excl">
+          <span class="row"><span class="tick">${TICK}</span>
+          <span style="flex:1">อ่านสิ่งที่ยังไม่คุ้มครองของแผนที่เลือกแล้ว<small>โดยเฉพาะระยะเวลารอคอยและโรคที่เป็นมาก่อน</small></span></span>
+        </button>
       </div>`,
       foot: `<div class="two">
           <button class="btn btn-ghost" data-act="go" data-s="s4">กลับไปแก้</button>
-          <button class="btn btn-primary" data-act="go-broker">ให้โบรกเกอร์ช่วยต่อ</button>
+          <button class="btn btn-primary" data-act="buy" ${S.readExclusions ? '' : 'disabled'}>ซื้อสินค้า</button>
+        </div>
+        <button class="btn-text" data-act="go-broker">ยังไม่แน่ใจ ขอปรึกษาโบรกเกอร์ก่อน</button>`
+    };
+  }
+
+  /* จอหลังกดซื้อ — ไม่มีการตัดเงินในเดโม และไม่มีปุ่มปิดการขายอัตโนมัติ */
+  function s5done() {
+    const picked = S.ranking.recommendations.filter(x => S.selected.indexOf(x.product.id) > -1);
+    const total = picked.reduce((a, x) => a + x.product.premiumMonthly, 0);
+    const hasState = picked.some(x => x.product.kind === 'state');
+    const hasPrivate = picked.some(x => x.product.kind === 'private');
+
+    const steps = [
+      hasPrivate ? ['ตัวแทนที่มีใบอนุญาตตรวจใบคำขอ', 'ภายใน 2 ชั่วโมงทำการ ตรวจว่าคุณสมัครแผนนี้ได้จริงก่อนเดินเรื่องต่อ'] : null,
+      hasPrivate ? ['ยืนยันข้อมูลสุขภาพและวิธีชำระเบี้ย', 'คุยผ่าน LINE ตามช่องทางที่คุณสะดวก ไม่มีการตัดเงินก่อนคุณยืนยัน'] : null,
+      hasPrivate ? ['กรมธรรม์มีผลหลังชำระเบี้ยงวดแรก', 'ยังมีสิทธิยกเลิกในช่วงพิจารณา (free look) ได้เงินคืนตามเงื่อนไข'] : null,
+      hasState ? ['ม.40 คุณสมัครเองได้ทันที', 'ที่สำนักงานประกันสังคม เซเว่นอีเลฟเว่น ธนาคาร หรือเว็บ สปส. เราไม่ได้ค่าคอมมิชชันจากสิทธินี้'] : null
+    ].filter(Boolean);
+
+    return {
+      top: '',
+      body: `<div class="stack g16" style="padding-top:18px">
+        <div class="stack g6">
+          <span class="pill pill-ok" style="align-self:flex-start">รับคำขอแล้ว</span>
+          <h1 class="h-screen" style="margin:0">รับคำขอซื้อของคุณแล้ว เลขที่ ${esc(S.orderNo)}</h1>
+          <p class="lede">รวม ${B(total)} บาท/เดือน · ยังไม่มีการตัดเงินในขั้นนี้</p>
+        </div>
+
+        <div class="card">
+          ${picked.map((x, i) => `<div class="kv" ${i === 0 ? 'style="padding-top:0"' : ''}>
+            <span>${esc(x.product.name)}</span><b class="mono">${B(x.product.premiumMonthly)} ฿/ด.</b></div>`).join('')}
+        </div>
+
+        <div class="seclabel"><span class="eyebrow">ลำดับขั้นจากนี้</span></div>
+        <div class="timeline">
+          ${steps.map((st, i) => `<div class="tl"><time>ขั้นที่ ${i + 1}</time>
+            <p class="small"><b>${esc(st[0])}</b></p><em>${esc(st[1])}</em></div>`).join('')}
+        </div>
+
+        ${hasState ? `<a class="btn btn-ghost" href="https://www.sso.go.th" target="_blank" rel="noopener">เปิดเว็บประกันสังคมเพื่อสมัคร ม.40</a>` : ''}
+
+        <div class="banner"><b>ส่วนนี้สำหรับทีมเท่านั้น</b><br>ในระบบจริงลูกค้าจบที่จอนี้ ปุ่มล่างพาไปดูจอฝั่งโบรกเกอร์ที่ได้รับเคสนี้</div>
+      </div>`,
+      foot: `<div class="two">
+          <button class="btn btn-ghost" data-act="go" data-s="s4">ดูผลของฉันอีกครั้ง</button>
+          <button class="btn btn-primary" data-act="go" data-s="s7">เปิดจอโบรกเกอร์ (S7)</button>
         </div>`
     };
   }
@@ -1008,6 +1059,9 @@
       ['สินค้าที่แนะนำและเหตุผล', r.recommendations.length + ' แผน · ตัดออก ' + r.filterAudit.length + ' รายการพร้อมเหตุผล']
     ];
 
+    const checklistDone = checklist.filter(c => !!c[1]).length;
+    const checklistWarn = checklist.filter(c => c[1] && /ไม่แน่ใจ|ประมาณการ|ไม่ระบุ|ไม่บอก/.test(c[1])).length;
+
     const openers = [
       p.existing.m40.has
         ? `สวัสดีครับคุณ${esc(b.nickname)} เห็นว่าคุณสมัคร ม.40 ไว้แล้ว ถือว่าคิดมาก่อนคนส่วนใหญ่เลยครับ วันนี้ผมอยากคุยเรื่องช่องว่างที่ ม.40 ยังไม่ครอบคลุม คือค่ารักษาพยาบาลครับ`
@@ -1077,53 +1131,63 @@
           <p class="tiny" style="margin-top:10px">ฉากทัศน์: ${esc(MC.SCENARIOS[S.scenario2].label)} · โหมด${S.mode2 === 'state' ? 'สิทธิรัฐ' : 'เอกชน'} · หลอด 3 ${S.horizon3 === 'to60' ? 'ถึงอายุ 60' : S.horizon3 + ' เดือน'}</p>
         </div>
 
-        <div class="card">
-          <h3 class="h-sec">สิ่งที่ลูกค้าเห็นไปแล้ว</h3>
-          <ul class="covers" style="margin-top:9px">
-            <li>${p.existing.m40.has ? 'เห็นว่าใช้สิทธิ ม.40 อยู่แล้ว ระบบไม่เสนอซ้ำ' : 'เห็น ม.40 เป็นข้อแรก พร้อมป้ายว่าเราไม่ได้ค่าคอมมิชชัน'}</li>
-            <li>เห็นกล่องข้อยกเว้นของทุกแผน กางไว้ตั้งแต่แรก</li>
-            <li>${picked.length ? 'เลือกไว้ ' + picked.map(s => esc(s.product.name)).join(', ') : 'ยังไม่เลือกแผน ขอคุยก่อน'}</li>
-          </ul>
-        </div>
+        <details class="acc">
+          <summary>สิ่งที่ลูกค้าเห็นไปแล้ว <span class="cnt">3</span></summary>
+          <div class="accbody">
+            <ul class="covers">
+              <li>${p.existing.m40.has ? 'เห็นว่าใช้สิทธิ ม.40 อยู่แล้ว ระบบไม่เสนอซ้ำ' : 'เห็น ม.40 เป็นข้อแรก พร้อมป้ายว่าเราไม่ได้ค่าคอมมิชชัน'}</li>
+              <li>เห็นกล่องข้อยกเว้นของทุกแผน กางไว้ตั้งแต่แรก</li>
+              <li>${picked.length ? 'เลือกไว้ ' + picked.map(s => esc(s.product.name)).join(', ') : 'ยังไม่เลือกแผน ขอคุยก่อน'}</li>
+            </ul>
+          </div>
+        </details>
 
-        <div class="card">
-          <h3 class="h-sec">Checklist 12 รายการ</h3>
-          <p class="tiny" style="margin-top:2px">หลักฐานว่าข้ามขั้นสัมภาษณ์ได้ทั้งขั้น</p>
-          <ul class="checklist" style="margin-top:8px">
-            ${checklist.map((c, i) => {
-              const ok = !!c[1];
-              const warn = ok && /ไม่แน่ใจ|ประมาณการ|ไม่ระบุ|ไม่บอก/.test(c[1]);
-              return `<li><span class="n ${warn ? 'warn' : ''}">${ok ? (warn ? '!' : '✓') : '–'}</span>
-                <span><b>${i + 1}. ${esc(c[0])}</b><span>${esc(c[1] || 'ลูกค้าข้ามข้อนี้')}</span></span></li>`;
-            }).join('')}
-          </ul>
-        </div>
+        <details class="acc">
+          <summary>ข้อมูลที่เก็บมาแล้ว <span class="cnt">${checklistDone}/12</span></summary>
+          <div class="accbody">
+            <p class="tiny">หลักฐานว่าข้ามขั้นสัมภาษณ์ได้ทั้งขั้น${checklistWarn ? ` · มี ${checklistWarn} ข้อที่ต้องถามย้ำ` : ''}</p>
+            <ul class="checklist" style="margin-top:6px">
+              ${checklist.map((c, i) => {
+                const ok = !!c[1];
+                const warn = ok && /ไม่แน่ใจ|ประมาณการ|ไม่ระบุ|ไม่บอก/.test(c[1]);
+                return `<li><span class="n ${warn ? 'warn' : ''}">${ok ? (warn ? '!' : '✓') : '–'}</span>
+                  <span><b>${i + 1}. ${esc(c[0])}</b><span>${esc(c[1] || 'ลูกค้าข้ามข้อนี้')}</span></span></li>`;
+              }).join('')}
+            </ul>
+          </div>
+        </details>
 
         <div class="seclabel"><span class="eyebrow">Co-Pilot · ช่วยเปิดบทสนทนา ไม่ได้ตัดสินใจแทน</span></div>
-        <div class="card">
-          <h3 class="h-sec">ประโยคเปิดที่แนะนำ</h3>
-          <div class="stack g8" style="margin-top:9px">
-            ${openers.map(o => `<div class="banner plain" style="font-size:.84rem">${o}</div>`).join('')}
-          </div>
-        </div>
-        <div class="card">
-          <h3 class="h-sec">คำถามที่ลูกค้าน่าจะถาม</h3>
-          <div class="stack g12" style="margin-top:9px">
-            ${faqs.map(f => `<div><b class="small">${esc(f[0])}</b><p class="tiny" style="margin-top:2px">${esc(f[1])}</p></div>`).join('')}
-          </div>
-        </div>
 
-        <div class="card">
-          <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
-            <h3 class="h-sec" style="flex:1">Audit Trail</h3>
-            <span class="pill pill-info">แก้ไขไม่ได้</span>
+        <details class="acc" open>
+          <summary>ประโยคเปิดที่แนะนำ <span class="cnt">${openers.length}</span></summary>
+          <div class="accbody">
+            <div class="stack g8">
+              ${openers.map(o => `<div class="banner plain" style="font-size:.84rem">${o}</div>`).join('')}
+            </div>
           </div>
-          <div class="timeline" style="margin-top:11px">
-            ${S.audit.map(a => `<div class="tl"><time>${hhmm(a.at)}</time>
-              <p class="small">${esc(a.text)}</p>${a.detail ? `<em>${esc(a.detail)}</em>` : ''}</div>`).join('')}
+        </details>
+
+        <details class="acc">
+          <summary>คำถามที่ลูกค้าน่าจะถาม <span class="cnt">${faqs.length}</span></summary>
+          <div class="accbody">
+            <div class="stack g12">
+              ${faqs.map(f => `<div><b class="small">${esc(f[0])}</b><p class="tiny" style="margin-top:2px">${esc(f[1])}</p></div>`).join('')}
+            </div>
           </div>
-          <button class="btn btn-ghost btn-sm" style="margin-top:11px;width:100%" data-act="noop">ส่งออกเป็น PDF</button>
-        </div>
+        </details>
+
+        <details class="acc">
+          <summary>Audit Trail <span class="cnt">${S.audit.length} รายการ</span></summary>
+          <div class="accbody">
+            <p class="tiny" style="margin-bottom:10px">ทุกคำแนะนำที่ระบบให้ พร้อมเหตุผล · บันทึกนี้แก้ไขไม่ได้</p>
+            <div class="timeline">
+              ${S.audit.map(a => `<div class="tl"><time>${hhmm(a.at)}</time>
+                <p class="small">${esc(a.text)}</p>${a.detail ? `<em>${esc(a.detail)}</em>` : ''}</div>`).join('')}
+            </div>
+            <button class="btn btn-ghost btn-sm" style="margin-top:11px;width:100%" data-act="noop">ส่งออกเป็น PDF</button>
+          </div>
+        </details>
 
         <div class="banner warn">ระบบนี้ไม่มีปุ่มปิดการขายอัตโนมัติ ทุกการปิดการขายทำโดยตัวแทนที่มีใบอนุญาต</div>
       </div>`,
@@ -1147,7 +1211,7 @@
      render + events
      ========================================================================== */
 
-  const SCREENS = { s1, s2, s3, s4, s5, s6, s6done, s7 };
+  const SCREENS = { s1, s2, s3, s4, s5, s5done, s6, s6done, s7 };
 
   function render() {
     const r = SCREENS[S.screen]();
@@ -1327,6 +1391,14 @@
         return render();
       }
       case 'go-buy': return go('s5');
+      case 'read-excl': S.readExclusions = !S.readExclusions; return render();
+      case 'buy': {
+        S.orderNo = S.caseId + '-01';
+        const picked = S.ranking.recommendations.filter(x => S.selected.indexOf(x.product.id) > -1);
+        audit('buy', 'ลูกค้ากดซื้อ ' + picked.length + ' แผน เลขที่คำขอ ' + S.orderNo,
+          'ติ๊กยืนยันว่าอ่านข้อยกเว้นแล้วก่อนกดซื้อ · ระบบไม่ปิดการขายเอง ส่งใบคำขอให้ตัวแทนที่มีใบอนุญาตตรวจก่อนเสมอ');
+        return go('s5done');
+      }
       case 'go-broker': return go('s6');
 
       case 'broker': S.brokerId = t.dataset.id; return render();
