@@ -1396,10 +1396,19 @@
       }
       case 'pick-tier': {
         const id = t.dataset.id;
-        S.ranking.primary = S.ranking.primary.map(s =>
-          s.product.kind === 'state' ? S.ranking.allStateTiers.find(x => x.product.id === id) : s);
-        S.ranking.statePick = S.ranking.allStateTiers.find(x => x.product.id === id);
+        const tier = S.ranking.allStateTiers.find(x => x.product.id === id);
+        if (!tier) return;
+        /* ต้องสลับในทุกรายการ ไม่ใช่แค่การ์ดที่แสดงอยู่
+           เพราะการคำนวณแถบ เบี้ยรวม และจอถัดไป อ่านจาก recommendations */
+        const swap = (arr) => arr.map(x => (x.product.kind === 'state' ? tier : x));
+        const wasSelected = S.selected.some(x => x.indexOf('m40') === 0);
+        S.ranking.recommendations = swap(S.ranking.recommendations);
+        S.ranking.primary = swap(S.ranking.primary);
+        S.ranking.more = swap(S.ranking.more);
+        S.ranking.statePick = tier;
+        /* ถ้าเลือก ม.40 ไว้อยู่แล้ว ให้ยังเลือกอยู่ แต่เปลี่ยนเป็นทางเลือกใหม่ */
         S.selected = S.selected.filter(x => x.indexOf('m40') !== 0);
+        if (wasSelected) S.selected.push(id);
         return render();
       }
       case 'go-buy': return go('s5');
