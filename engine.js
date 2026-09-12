@@ -559,11 +559,28 @@
       if (selectedIds.indexOf(s.product.id) === -1) return;
       s.deltas.forEach(d => { add[d.tubeId] += d.baht; });
     });
-    return tubes.map(t => {
+
+    const out = tubes.map(t => {
       const have = t.haveBaht + add[t.id];
       const pct = t.neededBaht > 0 ? clamp((have / t.neededBaht) * 100, 0, 100) : t.pct;
-      return { id: t.id, title: t.title, fromPct: t.pct, toPct: pct, addedBaht: add[t.id] };
+      return {
+        id: t.id, title: t.title,
+        fromPct: t.pct, toPct: pct, addedBaht: add[t.id],
+        unknown: t.unknown,
+        fromStatus: t.status,
+        status: statusOf(pct, t.unknown)
+      };
     });
+
+    /* สถานะหลังเลือกแผนต้องไม่แย่ลงกว่าเดิมเด็ดขาด
+       เพราะหลอดที่ถูกกติกาแดงแถบเดียวลดเป็นส้มไว้ จะเด้งกลับเป็นแดง
+       ทันทีที่อีกหลอดหายแดง ซึ่งอ่านว่า "ซื้อแล้วแย่ลง" ทั้งที่เงินเท่าเดิม */
+    const rank = { red: 0, watch: 1, ok: 2 };
+    out.forEach(o => {
+      if (o.unknown) return;
+      if (rank[o.status] < rank[o.fromStatus]) o.status = o.fromStatus;
+    });
+    return out;
   }
 
   global.MC = {

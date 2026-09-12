@@ -517,7 +517,6 @@
       <span class="trow-main">
         <span class="trow-top">
           <b>${esc(tube.title)}</b>
-          <span class="addlbl" data-add-lbl="${tube.id}" style="display:none"></span>
           <span class="pill pill-${st}">${STATUS_TEXT[st]}</span>
         </span>
         ${trackHtml(tube, { zero: !S.tubesAnimated, add: true })}
@@ -621,12 +620,26 @@
 
     preview.forEach(pv => {
       const delta = Math.max(0, pv.toPct - pv.fromPct);
-      const seg = view.querySelector(`.seg-add[data-add="${pv.id}"]`);
+      const row = view.querySelector(`.trow[data-t="${pv.id}"]`);
+      if (!row) return;
+
+      const seg = row.querySelector('.seg-add');
       if (seg) seg.style.width = delta.toFixed(2) + '%';
-      const lbl = view.querySelector(`[data-add-lbl="${pv.id}"]`);
-      if (lbl) {
-        lbl.textContent = delta >= 1 ? '+' + Math.round(delta) + ' จุด' : '';
-        lbl.style.display = delta >= 1 ? '' : 'none';
+
+      /* อิโมจิ ป้ายข้อความ และสีราง ขยับตามสถานะใหม่ที่ engine คำนวณให้ */
+      const face = row.querySelector('.face');
+      if (face) {
+        face.textContent = STATUS_FACE[pv.status];
+        face.setAttribute('aria-label', STATUS_TEXT[pv.status]);
+      }
+      const pill = row.querySelector('.pill');
+      if (pill) {
+        pill.className = 'pill pill-' + pv.status;
+        pill.textContent = STATUS_TEXT[pv.status];
+      }
+      const track = row.querySelector('.track');
+      if (track) {
+        track.className = 'track t-' + (pv.status === 'unknown' ? 'unk' : pv.status);
       }
     });
 
@@ -660,7 +673,7 @@
 
     const hint = view.querySelector('#stickyhint');
     if (hint) hint.textContent = S.selected.length
-      ? 'สีเขียวคือส่วนที่จะเพิ่มขึ้นจากแผนที่คุณเลือก · แตะแถบเพื่อดูที่มา'
+      ? 'นี่คือภาพหลังซื้อแผนที่เลือก สีเขียวคือส่วนที่เพิ่มขึ้น · แตะแถบเพื่อดูที่มา'
       : 'แตะแถบเพื่อดูที่มาและความเสี่ยงที่ตามมา';
 
     const buy = footbar.querySelector('[data-act="go-buy"]');
@@ -680,8 +693,8 @@
       ? `<div class="toggle" style="margin-top:10px">${S.ranking.allStateTiers.map(t =>
         `<button data-act="pick-tier" data-id="${t.product.id}" class="${t.product.id === p.id ? 'on' : ''}">${t.product.premiumMonthly} ฿</button>`).join('')}</div>` : '';
 
-    /* บอกแค่ว่าเติมหลอดไหนกี่จุด ส่วนการขยับจริงไปเกิดบนแถบที่ค้างอยู่ด้านบน */
-    const fills = s.deltas.map(d => `${esc(d.tubeTitle)} +${Math.round(d.pctPoints)} จุด`).join(' · ');
+    /* บอกแค่ว่าช่วยปิดหลอดไหน ส่วนการขยับจริงไปเกิดบนแถบที่ค้างอยู่ด้านบน */
+    const fills = s.deltas.map(d => esc(d.tubeTitle)).join(' · ');
 
     return `<article class="prod ${on ? 'sel' : ''} ${s.overBudget ? 'over' : ''}" data-pid="${p.id}" style="${gold ? 'border-color:var(--gold-600);border-width:1.5px' : ''}">
       <div class="prod-body">
