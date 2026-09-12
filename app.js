@@ -350,7 +350,6 @@
           ${LOGO}
           <div class="wordmark">มั่น<em>ชัวร์</em></div>
           <p>เช็คให้พอดี เพื่อให้ชีวิตที่มั่นชัวร์</p>
-          <p class="sub">ตอบ 8 คำถามใน 3 นาที แล้วดูว่าตอนนี้คุณขาดอะไรอยู่</p>
         </div>
         <div class="card" style="padding:2px 14px">
           ${trust.map((t, i) => `<div class="trust">${icons[i]}<div><b>${esc(t[0])}</b><span>${esc(t[1])}</span></div></div>`).join('')}
