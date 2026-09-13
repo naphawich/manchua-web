@@ -972,7 +972,7 @@
 
         <div class="stack g8">
           <h2 class="h-sec">เลือกคนที่คุณอยากคุยด้วย</h2>
-          <p class="tiny" style="margin-top:-4px">คะแนนจับคู่คิดจากความเชี่ยวชาญ 40% ผลลัพธ์ 25% เวลาตรงกัน 20% ตอบไว 15% ไม่มีค่าคอมมิชชันในสมการ</p>
+          <p class="tiny" style="margin-top:-4px">เรียงตามความเหมาะกับเคสของคุณ คิดจากความเชี่ยวชาญ 40% ผลลัพธ์ 25% เวลาตรงกัน 20% ตอบไว 15% ไม่มีค่าคอมมิชชันในสมการ</p>
           ${list.map(b => `<button class="brokercard ${b.id === S.brokerId ? 'sel' : ''}" data-act="broker" data-id="${b.id}">
             <span class="top">
               <span class="avatar sm">${esc(b.initials)}</span>
@@ -981,7 +981,6 @@
                 <span class="role">${esc(b.focus)} · ดูแลมาแล้ว ${b.cases} เคส</span>
                 <span class="role">ตอบเฉลี่ยใน ${b.replyMin} นาที · ${esc(b.licence)}</span>
               </span>
-              <span class="matchnum"><b>${b.score}</b><span>คะแนน</span></span>
             </span>
           </button>`).join('')}
         </div>
